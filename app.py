@@ -526,6 +526,10 @@ st.markdown(
             <span class='stat-val'>${stamp_duty_amt:,.0f}</span>
         </div>
         <div class='stat-box'>
+            <span class='stat-title'>Down Payment</span>
+            <span class='stat-val'>${deposit_amt:,.0f}</span>
+        </div>
+        <div class='stat-box'>
             <span class='stat-title'>Loan Amount</span>
             <span class='stat-val'>${loan_amount:,.0f}</span>
         </div>
@@ -653,7 +657,7 @@ with st.expander("· · ·", expanded=False):
     st.divider()
     stamp_pct_effective = (stamp_duty_amt / property_val * 100) if property_val > 0 else 0
     state_label = f"{st.session_state.state} · {st.session_state.buyer_type}" if st.session_state.stamp_duty_mode == "Auto (by State)" else st.session_state.stamp_duty_mode
-    capitalize_label = "Deposit only (stamp duty added to loan)" if st.session_state.capitalize_stamp_duty else "Deposit + stamp duty"
+    capitalize_label = "Deposit only (stamp duty added to loan)" if st.session_state.capitalize_stamp_duty else "Stamp duty deducted from available funds"
     st.markdown(
         f"""
         <div style='display:flex; flex-direction:column; gap:10px; margin-top:4px;'>
@@ -662,20 +666,30 @@ with st.expander("· · ·", expanded=False):
                       border-radius: 12px; padding: 14px 18px;'>
               <div>
                   <div style='font-size:11px; color:#10b981; font-weight:700;
-                              letter-spacing:1.5px; text-transform:uppercase;'>Stamp Duty</div>
-                  <div style='font-size:0.75rem; color:#64748b; margin-top:2px;'>{state_label} · {stamp_pct_effective:.2f}% effective rate</div>
+                              letter-spacing:1.5px; text-transform:uppercase;'>Total Available Funds</div>
+                  <div style='font-size:0.75rem; color:#64748b; margin-top:2px;'>Total cash provided</div>
               </div>
-              <div style='font-size:1.4rem; font-weight:800; color:#f8fafc;'>${stamp_duty_amt:,.0f}</div>
+              <div style='font-size:1.4rem; font-weight:800; color:#f8fafc;'>${total_cash:,.0f}</div>
           </div>
           <div style='display:flex; align-items:center; justify-content:space-between;
                       background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.2);
                       border-radius: 12px; padding: 14px 18px;'>
               <div>
                   <div style='font-size:11px; color:#10b981; font-weight:700;
-                              letter-spacing:1.5px; text-transform:uppercase;'>Upfront Cash Required</div>
+                              letter-spacing:1.5px; text-transform:uppercase;'>Stamp Duty (Deducted)</div>
+                  <div style='font-size:0.75rem; color:#64748b; margin-top:2px;'>{state_label} · {stamp_pct_effective:.2f}%</div>
+              </div>
+              <div style='font-size:1.4rem; font-weight:800; color:#f8fafc;'>-${stamp_duty_amt:,.0f}</div>
+          </div>
+          <div style='display:flex; align-items:center; justify-content:space-between;
+                      background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.2);
+                      border-radius: 12px; padding: 14px 18px;'>
+              <div>
+                  <div style='font-size:11px; color:#10b981; font-weight:700;
+                              letter-spacing:1.5px; text-transform:uppercase;'>Net Down Payment</div>
                   <div style='font-size:0.75rem; color:#64748b; margin-top:2px;'>{capitalize_label}</div>
               </div>
-              <div style='font-size:1.4rem; font-weight:800; color:#f8fafc;'>${upfront_cash:,.0f}</div>
+              <div style='font-size:1.4rem; font-weight:800; color:#f8fafc;'>${deposit_amt:,.0f}</div>
           </div>
         </div>
         """,
