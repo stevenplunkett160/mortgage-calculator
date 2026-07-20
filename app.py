@@ -537,8 +537,8 @@ st.markdown(
             <span class='stat-val'>${stamp_duty_amt:,.0f}</span>
         </div>
         <div class='stat-box'>
-            <span class='stat-title'>Down Payment</span>
-            <span class='stat-val'>${deposit_amt:,.0f}</span>
+            <span class='stat-title'>Settlement Deposit</span>
+            <span class='stat-val'>${settlement_cash:,.0f}</span>
         </div>
         <div class='stat-box'>
             <span class='stat-title'>Loan Amount</span>
