@@ -276,10 +276,9 @@ _c_rgb_dark  = "5, 150, 105"  if not _over_threshold else "185, 28, 28"
 
 st.markdown(
     f"""
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
     html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {{
         font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
         background-color: #0f172a !important;
