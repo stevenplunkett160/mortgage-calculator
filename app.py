@@ -229,26 +229,23 @@ elif st.session_state.stamp_duty_mode == "Custom Cash Amount":
 else:
     stamp_duty_amt = 0.0
 
-# 3. Calculate Loan Amount and Upfront Cash Required
-# 10% deposit is paid upfront to the realtor at contract exchange.
-# Stamp duty is paid upfront out of available cash unless capitalized into the loan.
-realtor_deposit_amt = property_val * 0.10
-
+# 3. Calculate Down Payment & Loan Amount
 if st.session_state.capitalize_stamp_duty:
-    # Stamp duty rolled into loan; all available cash goes toward property
-    settlement_cash = max(0.0, total_cash - realtor_deposit_amt)
-    deposit_amt  = total_cash
-    loan_amount  = property_val - deposit_amt + stamp_duty_amt
-    upfront_cash = total_cash
+    # Stamp duty rolled into loan
+    cash_for_house = min(property_val, max(0.0, total_cash))
+    realtor_deposit_amt = min(property_val * 0.10, cash_for_house)
+    settlement_cash = max(0.0, cash_for_house - realtor_deposit_amt)
+    deposit_amt = cash_for_house
+    loan_amount = max(0.0, property_val - deposit_amt + stamp_duty_amt)
+    upfront_cash = deposit_amt
 else:
-    # Stamp duty paid upfront from available cash, plus 10% realtor deposit
-    settlement_cash = max(0.0, total_cash - realtor_deposit_amt - stamp_duty_amt)
-    deposit_amt  = realtor_deposit_amt + settlement_cash
-    loan_amount  = property_val - deposit_amt
-    upfront_cash = total_cash  # total cash available
-
-# Guarantee loan amount doesn't drop below 0
-loan_amount = max(0.0, loan_amount)
+    # Stamp duty paid upfront out of available cash
+    cash_for_house = min(property_val, max(0.0, total_cash - stamp_duty_amt))
+    realtor_deposit_amt = min(property_val * 0.10, cash_for_house)
+    settlement_cash = max(0.0, cash_for_house - realtor_deposit_amt)
+    deposit_amt = cash_for_house
+    loan_amount = max(0.0, property_val - deposit_amt)
+    upfront_cash = min(total_cash, deposit_amt + stamp_duty_amt)
 
 # 4. Standard Amortization Formula
 # Monthly interest rate r, total number of months n
