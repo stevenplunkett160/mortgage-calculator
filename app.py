@@ -58,6 +58,7 @@ def set_property_value(value):
 
 
 # ----------------- STAMP DUTY CALCULATION ENGINE -----------------
+@st.cache_data
 def calculate_stamp_duty(value, state, buyer_type):
     """Calculate stamp duty using 2025/26 published bracket formulas for each Australian state/territory."""
     is_fhb = buyer_type == "First Home Buyer"
@@ -233,19 +234,19 @@ else:
 if st.session_state.capitalize_stamp_duty:
     # Stamp duty rolled into loan
     cash_for_house = min(property_val, max(0.0, total_cash))
-    realtor_deposit_amt = min(property_val * 0.10, cash_for_house)
-    settlement_cash = max(0.0, cash_for_house - realtor_deposit_amt)
-    deposit_amt = cash_for_house
-    loan_amount = max(0.0, property_val - deposit_amt + stamp_duty_amt)
+    realtor_deposit_amt = round(min(property_val * 0.10, cash_for_house), 2)
+    settlement_cash = round(max(0.0, cash_for_house - realtor_deposit_amt), 2)
+    deposit_amt = round(cash_for_house, 2)
+    loan_amount = round(max(0.0, property_val - deposit_amt + stamp_duty_amt), 2)
     upfront_cash = deposit_amt
 else:
     # Stamp duty paid upfront out of available cash
     cash_for_house = min(property_val, max(0.0, total_cash - stamp_duty_amt))
-    realtor_deposit_amt = min(property_val * 0.10, cash_for_house)
-    settlement_cash = max(0.0, cash_for_house - realtor_deposit_amt)
-    deposit_amt = cash_for_house
-    loan_amount = max(0.0, property_val - deposit_amt)
-    upfront_cash = min(total_cash, deposit_amt + stamp_duty_amt)
+    realtor_deposit_amt = round(min(property_val * 0.10, cash_for_house), 2)
+    settlement_cash = round(max(0.0, cash_for_house - realtor_deposit_amt), 2)
+    deposit_amt = round(cash_for_house, 2)
+    loan_amount = round(max(0.0, property_val - deposit_amt), 2)
+    upfront_cash = round(min(total_cash, deposit_amt + stamp_duty_amt), 2)
 
 # 4. Standard Amortization Formula
 # Monthly interest rate r, total number of months n
@@ -255,13 +256,13 @@ n = st.session_state.mortgage_term * 12
 if loan_amount <= 0:
     monthly_repayment = 0.0
 elif r == 0:
-    monthly_repayment = loan_amount / n
+    monthly_repayment = loan_amount / max(1, n)
 else:
     monthly_repayment = loan_amount * (r * (1 + r)**n) / ((1 + r)**n - 1)
 
 # Convert monthly repayment to weekly repayment
 # (Standard banking practice is converting monthly payment to annual, then dividing by 52)
-weekly_repayment = (monthly_repayment * 12.0) / 52.0
+weekly_repayment = round((monthly_repayment * 12.0) / 52.0, 2)
 
 # Inject CSS with dynamic theme based on weekly repayment threshold
 _over_threshold = weekly_repayment > 550
@@ -275,9 +276,10 @@ _c_rgb_dark  = "5, 150, 105"  if not _over_threshold else "185, 28, 28"
 
 st.markdown(
     f"""
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
-
     html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {{
         font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
         background-color: #0f172a !important;
