@@ -25,7 +25,7 @@ if "mortgage_term" not in st.session_state:
     st.session_state.mortgage_term = 30
 
 if "deposit_amt_input" not in st.session_state:
-    st.session_state.deposit_amt_input = 561000.0
+    st.session_state.deposit_amt_input = 595000.0
 
 
 if "stamp_duty_pct" not in st.session_state:
@@ -230,17 +230,22 @@ else:
     stamp_duty_amt = 0.0
 
 # 3. Calculate Loan Amount and Upfront Cash Required
-# Stamp duty is paid from available cash unless capitalized into the loan.
+# 10% deposit is paid upfront to the realtor at contract exchange.
+# Stamp duty is paid upfront out of available cash unless capitalized into the loan.
+realtor_deposit_amt = property_val * 0.10
+
 if st.session_state.capitalize_stamp_duty:
-    # Stamp duty rolled into loan; all available cash goes toward deposit
+    # Stamp duty rolled into loan; all available cash goes toward property
+    settlement_cash = max(0.0, total_cash - realtor_deposit_amt)
     deposit_amt  = total_cash
     loan_amount  = property_val - deposit_amt + stamp_duty_amt
     upfront_cash = total_cash
 else:
-    # Stamp duty paid upfront from available cash; remainder is the deposit
-    deposit_amt  = max(0.0, total_cash - stamp_duty_amt)
+    # Stamp duty paid upfront from available cash, plus 10% realtor deposit
+    settlement_cash = max(0.0, total_cash - realtor_deposit_amt - stamp_duty_amt)
+    deposit_amt  = realtor_deposit_amt + settlement_cash
     loan_amount  = property_val - deposit_amt
-    upfront_cash = total_cash  # total cash needed (deposit + stamp duty)
+    upfront_cash = total_cash  # total cash available
 
 # Guarantee loan amount doesn't drop below 0
 loan_amount = max(0.0, loan_amount)
@@ -657,7 +662,7 @@ with st.expander("· · ·", expanded=False):
     st.divider()
     stamp_pct_effective = (stamp_duty_amt / property_val * 100) if property_val > 0 else 0
     state_label = f"{st.session_state.state} · {st.session_state.buyer_type}" if st.session_state.stamp_duty_mode == "Auto (by State)" else st.session_state.stamp_duty_mode
-    capitalize_label = "Deposit only (stamp duty added to loan)" if st.session_state.capitalize_stamp_duty else "Stamp duty deducted from available funds"
+    capitalize_label = "Deposit only (stamp duty added to loan)" if st.session_state.capitalize_stamp_duty else "Total cash contributed to house purchase"
     st.markdown(
         f"""
         <div style='display:flex; flex-direction:column; gap:10px; margin-top:4px;'>
@@ -676,7 +681,17 @@ with st.expander("· · ·", expanded=False):
                       border-radius: 12px; padding: 14px 18px;'>
               <div>
                   <div style='font-size:11px; color:#10b981; font-weight:700;
-                              letter-spacing:1.5px; text-transform:uppercase;'>Stamp Duty (Deducted)</div>
+                              letter-spacing:1.5px; text-transform:uppercase;'>10% Realtor Deposit (Exchange)</div>
+                  <div style='font-size:0.75rem; color:#64748b; margin-top:2px;'>Paid upfront to holding trust</div>
+              </div>
+              <div style='font-size:1.4rem; font-weight:800; color:#f8fafc;'>-${realtor_deposit_amt:,.0f}</div>
+          </div>
+          <div style='display:flex; align-items:center; justify-content:space-between;
+                      background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.2);
+                      border-radius: 12px; padding: 14px 18px;'>
+              <div>
+                  <div style='font-size:11px; color:#10b981; font-weight:700;
+                              letter-spacing:1.5px; text-transform:uppercase;'>Stamp Duty (Settlement)</div>
                   <div style='font-size:0.75rem; color:#64748b; margin-top:2px;'>{state_label} · {stamp_pct_effective:.2f}%</div>
               </div>
               <div style='font-size:1.4rem; font-weight:800; color:#f8fafc;'>-${stamp_duty_amt:,.0f}</div>
@@ -686,7 +701,17 @@ with st.expander("· · ·", expanded=False):
                       border-radius: 12px; padding: 14px 18px;'>
               <div>
                   <div style='font-size:11px; color:#10b981; font-weight:700;
-                              letter-spacing:1.5px; text-transform:uppercase;'>Net Down Payment</div>
+                              letter-spacing:1.5px; text-transform:uppercase;'>Remaining Cash at Settlement</div>
+                  <div style='font-size:0.75rem; color:#64748b; margin-top:2px;'>Paid towards remaining house balance</div>
+              </div>
+              <div style='font-size:1.4rem; font-weight:800; color:#f8fafc;'>${settlement_cash:,.0f}</div>
+          </div>
+          <div style='display:flex; align-items:center; justify-content:space-between;
+                      background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.2);
+                      border-radius: 12px; padding: 14px 18px;'>
+              <div>
+                  <div style='font-size:11px; color:#10b981; font-weight:700;
+                              letter-spacing:1.5px; text-transform:uppercase;'>Net Down Payment (Total Cash to House)</div>
                   <div style='font-size:0.75rem; color:#64748b; margin-top:2px;'>{capitalize_label}</div>
               </div>
               <div style='font-size:1.4rem; font-weight:800; color:#f8fafc;'>${deposit_amt:,.0f}</div>
