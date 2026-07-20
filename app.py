@@ -15,7 +15,7 @@ st.set_page_config(
 
 # 1. Main slider property value
 if "property_value" not in st.session_state:
-    st.session_state.property_value = 850000.0
+    st.session_state.property_value = 940000.0
 
 # 2. Debug parameters (defaults)
 if "interest_rate" not in st.session_state:
@@ -360,14 +360,16 @@ st.markdown(
     }}
 
     .stat-box {{
-        flex: 1;
+        flex: 1 1 18%;
+        min-width: 90px;
         background: rgba(30, 41, 59, 0.6);
         border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 16px;
-        padding: 14px;
+        border-radius: 14px;
+        padding: 10px 4px;
         display: flex;
         flex-direction: column;
         align-items: center;
+        text-align: center;
         transition: all 0.2s ease;
     }}
 
@@ -377,16 +379,16 @@ st.markdown(
     }}
 
     .stat-title {{
-        font-size: 11px;
+        font-size: 10px;
         color: #94a3b8;
         margin-bottom: 4px;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.3px;
         font-weight: 600;
     }}
 
     .stat-val {{
-        font-size: 1.15rem;
+        font-size: 1.05rem;
         font-weight: 700;
         color: #f8fafc;
     }}
@@ -525,6 +527,10 @@ st.markdown(
         <div class='stat-box'>
             <span class='stat-title'>Property Price</span>
             <span class='stat-val'>${property_val:,.0f}</span>
+        </div>
+        <div class='stat-box'>
+            <span class='stat-title'>Initial Deposit</span>
+            <span class='stat-val'>${realtor_deposit_amt:,.0f}</span>
         </div>
         <div class='stat-box'>
             <span class='stat-title'>Stamp Duty (Est.)</span>
