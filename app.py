@@ -50,8 +50,8 @@ if "buyer_type" not in st.session_state:
 # Callbacks for Property Value Adjustments
 def adjust_property_value(amount):
     new_val = st.session_state.property_value + amount
-    # Clamp value within slider min/max limits ($800k - $950k)
-    st.session_state.property_value = float(max(800000.0, min(new_val, 950000.0)))
+    # Clamp value within slider min/max limits ($875k - $950k)
+    st.session_state.property_value = float(max(875000.0, min(new_val, 950000.0)))
 
 def set_property_value(value):
     st.session_state.property_value = float(value)
@@ -550,11 +550,11 @@ st.markdown(
 # Property Slider (The main input for Mother)
 st.slider(
     "Choose Property Price",
-    min_value=800000.0,
+    min_value=875000.0,
     max_value=950000.0,
     value=st.session_state.property_value,
-    step=5000.0,
     key="property_value",
+    step=1000.0,
     format="$%,d"
 )
 
